@@ -1,0 +1,31 @@
+version: '2'
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+  mariadb:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8088:8080
+  www:
+    image: node:14-alpine
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - MYSQL_URI=mysql://root@mariadb/myapp
+      - MONGO_URI=mongodb://root:example@mongo:27017/myapp
+    depends_on:
+      - mariadb
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
